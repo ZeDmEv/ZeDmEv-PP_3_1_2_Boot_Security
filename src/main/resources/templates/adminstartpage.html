@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>User</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+<body style="background-color: #15151e">
+<table class="table table-dark">
+  <thead>
+  <tr>
+    <th scope="col">ID</th>
+    <th scope="col">Username</th>
+    <th scope="col">Password</th>
+    <th scope="col">Roles</th>
+    <th scope="col">User Job</th>
+    <th scope="col">Edit</th>
+    <th scope="col">Delete</th>
+  </tr>
+  <tbody>
+  <tr th:each="user: ${userlist}">
+    <td th:utext="${user.getId()}"></td>
+    <td th:utext="${user.getUsername()}"></td>
+    <td th:utext="${user.getPassword()}"></td>
+    <td th:utext="${user.getRolesToString()}"></td>
+    <td th:utext="${user.getJob()}"></td>
+    <td><a th:href="@{/admin/edit/{id}(id = ${user.getId()})}" th:text="edit"> </a></td>
+    <td><a th:href="@{/delete/{id}(id = ${user.getId()})}" th:text="delete"> </a></td>
+  </tr>
+  </tbody>
+</table>
+<td><a th:href="@{/admin/add}" th:text="add_user"> </a></td>
+<br>
+<td><a th:href="@{/admin}" th:text="go_back"> </a></td>
+<br>
+<td><a th:href="@{/logout}" th:text="logout"> </a></td>
+</body>
+</html>
