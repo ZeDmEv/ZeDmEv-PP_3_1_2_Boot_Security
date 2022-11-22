@@ -1,5 +1,7 @@
 package ru.kata.spring.boot_security.demo.entity;
 
+import org.springframework.util.StringUtils;
+
 import javax.persistence.*;
 import java.util.Set;
 
@@ -41,5 +43,8 @@ public class Role {
 
     public void setName(String name) {
         this.name = name;
+    }
+    public String getShortName() {
+        return name.substring(5).toUpperCase();
     }
 }

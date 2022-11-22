@@ -2,7 +2,10 @@ package ru.kata.spring.boot_security.demo.entity;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "t_user")
@@ -73,15 +76,21 @@ public class User{
         return roles;
     }
 
+    public List<String> getShortRoles() {
+        return roles.stream().map(Role::getShortName).sorted().collect(Collectors.toList());
+    }
+
     public String getRolesToString() {
         StringBuilder tmp = new StringBuilder();
-        for (Role r : roles) {
+        List<String> list = new ArrayList<>();
+        list = roles.stream().map(Role::getShortName).sorted().collect(Collectors.toList());
+        for (String s : list) {
             tmp
-                    .append(r.getName())
-                    .append(", ");
+                    .append(s)
+                    .append(" ");
         }
         if (tmp.length() > 0){
-            tmp.delete(tmp.length() - 2, tmp.length());
+            tmp.delete(tmp.length() - 1, tmp.length());
         }
         return tmp.toString();
     }

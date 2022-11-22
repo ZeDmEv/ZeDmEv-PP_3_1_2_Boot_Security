@@ -16,6 +16,7 @@ import ru.kata.spring.boot_security.demo.repository.UserRepository;
 import ru.kata.spring.boot_security.demo.security.UserDetailsImpl;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +26,8 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
     private RoleRepository roleRepository;
+
+    private final Logger logger = Logger.getLogger(UserDetailsServiceImpl.class.getName());
 
     private final PasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
 
@@ -58,42 +61,51 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     }
 
     public boolean saveUser(User user) {
-        Optional<User> userFromDB = userRepository.findByUsername(user.getUsername());
-        if (userFromDB.isPresent()) {
+        logger.info("save begins...");
+        Optional<User> userByName = userRepository.findByUsername(user.getUsername());
+        if (userByName.isPresent()) {
             return false;
         }
-        user.setRoles(Collections.singleton(roleRepository.findByName("ROLE_USER")));
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         userRepository.save(user);
         return true;
     }
 
     public void editUser(User user) {
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        Optional<User> userById = userRepository.findById(user.getId());
+        if (userById.isPresent() && user.getPassword().equals(userById.get().getPassword())) {
+            logger.info("user.getPassword() = " + user.getPassword());
+            userRepository.save(user);
+        } else {
+            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            userRepository.save(user);
+        }
     }
 
-    //Дефолтно все юзеры имеют роль USER
     public void setRole(User user, String role) {
-        if (role.equalsIgnoreCase("ADMIN")
-                || role.equalsIgnoreCase("ROLE_ADMIN")
-                || role.equalsIgnoreCase("ADMIN_ROLE")
-                || role.equalsIgnoreCase("ALL_ROLES")
-                || role.equalsIgnoreCase("ALL")) {
-            Set <Role> tmp = new HashSet<>();
+        if (role.equalsIgnoreCase("ADMIN")) {
+            Set<Role> tmp = new HashSet<>();
             tmp.add(roleRepository.findByName("ROLE_ADMIN"));
             tmp.add(roleRepository.findByName("ROLE_USER"));
             user.setRoles(tmp);
+            logger.info("Role set to: " + user.getRoles());
+            logger.info("Role set to: " + user.getRolesToString());
         }
-        if (role.equalsIgnoreCase("USER")
-                || role.equalsIgnoreCase("ROLE_USER")
-                || role.equalsIgnoreCase("USER_ROLE")
-                || role.equalsIgnoreCase("USER_ONLY")) {
+        if (role.equalsIgnoreCase("USER")) {
             user.setRoles(Collections.singleton(roleRepository.findByName("ROLE_USER")));
+            logger.info("Role set to: " + user.getRoles());
+            logger.info("Role set to: " + user.getRolesToString());
         }
     }
 
     public void deleteUser(User user) {
         userRepository.delete(user);
+    }
+
+    public List<Role> getAllRoles() {
+        List<Role> roles = new ArrayList<>();
+        roles.add(roleRepository.findByName("ROLE_ADMIN"));
+        roles.add(roleRepository.findByName("ROLE_USER"));
+        return roles;
     }
 }
