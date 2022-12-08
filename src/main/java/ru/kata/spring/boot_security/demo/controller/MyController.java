@@ -25,6 +25,18 @@ public class MyController {
         this.userDetailsService = userDetailsService;
     }
 
+    @GetMapping(value = "/api/userpage")
+    public String userPage(ModelMap model, Authentication authentication) {
+        model.addAttribute("thisuser", userDetailsService.findUserByUsername(authentication.getName()));
+        return "rest-userpage";
+    }
+
+    @GetMapping(value = "/api/adminpage")
+    public String adminPage(ModelMap model, Authentication authentication) {
+        model.addAttribute("thisuser", userDetailsService.findUserByUsername(authentication.getName()));
+        return "rest-adminpage";
+    }
+
     @GetMapping(value = "/")
     public String start() {
         return "redirect:/login";
