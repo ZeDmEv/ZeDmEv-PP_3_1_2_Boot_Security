@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<html lang="en">
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <title>Admin panel</title>
+
+</head>
+<body>
+<header>
+  <!-- navbar делает цветную полоску сверху страницы -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark sticky-top">
+    <!-- navbar-nav mr-auto выравнивает слева -->
+    <!-- Неупорядоченный список размечается тегом <ul> -->
+    <!-- <li> используется для создания элементов списка -->
+    <ul class="navbar-nav mr-auto">
+      <li class="navbar-brand font-weight-bold" th:utext="${thisuser.username}"></li>
+      <li class="navbar-brand">with roles:</li>
+      <li class="navbar-brand" th:utext="${thisuser.getRolesToString()}"></li>
+    </ul>
+    <!-- navbar-nav без mr-auto выравнивает справа -->
+    <ul class="navbar-nav">
+      <a class="nav-link" href="/logout">logout</a>
+    </ul>
+  </nav>
+</header>
+
+<!-- начало модального окна edit -->
+<div class="modal fade" id="modal-edit" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form class="modal-form" id="edit-form" onsubmit="return false">
+        <div class="modal-header">
+          <h4 class="modal-title">Edit user</h4>
+          <button type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <p>
+          <label class="container-fluid">
+            <strong>ID</strong>
+            <input class="form-control"
+                   type="number"
+                   name="edit-id"
+                   id="edit-id" disabled/>
+          </label>
+        </p>
+        <p>
+          <label class="container-fluid">
+            <strong>Username</strong>
+            <input class="form-control"
+                   type="text"
+                   required minlength="3"
+                   name="edit-username"
+                   id="edit-username"/>
+          </label>
+        </p>
+        <p>
+          <label class="container-fluid">
+            <strong>Job</strong>
+            <input class="form-control"
+                   type="text"
+                   name="edit-job"
+                   id="edit-job"/>
+          </label>
+        </p>
+        <p>
+          <label class="container-fluid">
+            <strong>Password</strong>
+            <input class="form-control"
+                   type="password"
+                   required minlength="4"
+                   name="edit-password"
+                   id="edit-password"/>
+          </label>
+        </p>
+        <p>
+          <label class="container-fluid">
+                 <strong>Role</strong>
+            <select id="edited-user-roles"
+                    class="form-control"
+                    name="editedUserRoles"
+                    required
+                    size="2">
+            </select>
+          </label>
+        </p>
+        <div class="modal-footer">
+          <button id="edit-close-button"
+                  name="editCloseButton"
+                  class="btn btn-secondary"
+                  type="button"
+                  onclick="getAdminPage()"
+                  data-dismiss="modal">Close
+          </button>
+          <button id="edit-button"
+                  name="editButton"
+                  class="btn btn-primary"
+                  onclick="buttonEdit()"
+                  > Edit
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- конец модального окна edit -->
+
+<!-- начало модального окна delete -->
+<div class="modal fade" id="modal-delete" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form class="modal-form" id="delete-form" onsubmit="return false">
+        <div class="modal-header">
+          <h4 class="modal-title">Delete user</h4>
+          <button type="button"
+                  class="close"
+                  data-dismiss="modal"
+                  aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <p>
+          <label class="container-fluid">
+            <strong>ID</strong>
+            <input class="form-control"
+                   type="number"
+                   name="delete-id"
+                   id="delete-id" disabled/>
+          </label>
+        </p>
+        <p>
+          <label class="container-fluid">
+            <strong>Username</strong>
+            <input class="form-control"
+                   type="text"
+                   name="delete-username"
+                   id="delete-username" disabled/>
+          </label>
+        </p>
+        <p>
+          <label class="container-fluid">
+            <strong>Job</strong>
+            <input class="form-control"
+                   type="text"
+                   name="delete-job"
+                   id="delete-job" disabled/>
+          </label>
+        </p>
+        <p>
+          <label class="container-fluid">
+            <strong>Password</strong>
+            <input class="form-control"
+                   type="password"
+                   name="delete-password"
+                   id="delete-password" disabled/>
+          </label>
+        </p>
+        <p>
+          <label class="container-fluid">
+                 <strong>Role</strong>
+            <select id="delete-user-roles"
+                    class="form-control"
+                    name="deleteUserRoles"
+                    disabled
+                    size="2">
+            </select>
+          </label>
+        </p>
+        <div class="modal-footer">
+          <button id="close-delete-button"
+                  name="closeDeleteButton"
+                  class="btn btn-secondary"
+                  type="button"
+                  onclick="getAdminPage();"
+                  data-dismiss="modal">Close
+          </button>
+          <button id="delete-button"
+                  type="submit"
+                  name="deleteButton"
+                  class="btn btn-danger"
+                  onclick="delButton()"
+          > Delete
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<!-- конец модального окна delete -->
+
+<!-- class="row" делает столбец -->
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-2" style="padding: 15px 0 0;">
+      <ul class="nav nav-pills flex-column">
+        <li class="nav-item">
+          <a class="nav-link active" data-toggle="tab" href="#adminPanel">Admin</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" data-toggle="tab" href="#userPanel">User</a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- в tab-content создаются блоки с контентом, на которые переходим из вкладок -->
+    <!-- в nav-tabs можно создавать вкладки -->
+    <!-- Вкладки оборачиваются элементом <li> -->
+    <!-- nav-item — сама вкладка -->
+    <!-- nav-link active открывает текущую вкладку по-умолчанию при открытии страницы -->
+    <div class="col-10 bg-light">
+      <div class="tab-content" style="padding-top: 15px; height: 100vh">
+
+        <div class="tab-pane fade show active" id="adminPanel">
+          <h2>Admin panel</h2>
+          <ul class="nav nav-tabs">
+            <li class="nav-item">
+              <a class="nav-link active" data-toggle="tab" id="UsersTable" href="#allUsers">Users
+                table</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="tab" href="#new-user-card">New User</a>
+            </li>
+          </ul>
+          <div class="tab-content">
+            <div class="tab-pane fade show active" id="allUsers">
+              <div class="card">
+                <h5 class="card-header">All users</h5>
+                <div class="card-body text-center">
+                  <table class="table table-striped">
+                    <thead>
+                    <tr>
+                      <th>ID</th>
+                      <th>Username</th>
+                      <th>Password</th>
+                      <th>Roles</th>
+                      <th>User Job</th>
+                      <th>Edit</th>
+                      <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody id="adminbody">
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div><!-- закончил таблицу с юзерами -->
+
+            <!-- класс card создает карточку -->
+            <div class="tab-pane fade" id="new-user-card">
+              <div class="form-group">
+                <div class="control-group required">
+                  <div class="card">
+                    <h5 class="card-header">Add new User</h5>
+                    <div class="card-body text-center">
+                      <div class="form justify-content-center mx-auto col-5">
+                        <form id="add-form" name="add-form" onsubmit="return false">
+                          <p>
+                            <label class="container-fluid">
+                                   <strong>Username</strong>
+                              <input class="form-control"
+                                     type="text"
+                                     name="add-username"
+                                     id="add-username"
+                                     required minlength="3"/>
+                            </label>
+                          </p>
+                          <p>
+                            <label class="container-fluid">
+                                   <strong>Job</strong>
+                              <input class="form-control"
+                                     type="text"
+                                     name="add-job"
+                                     id="add-job"
+                                     required/>
+                            </label>
+                          </p>
+                          <p>
+                            <label class="container-fluid">
+                              <strong>Password</strong>
+                              <input class="form-control"
+                                     type="password"
+                                     name="add-password"
+                                     id="add-password"
+                                     required minlength="4"/>
+                            </label>
+                          </p>
+                          <p>
+                            <label class="container-fluid">
+                              <strong>Role</strong>
+                              <select class="form-control"
+                                      name="addRoles"
+                                      id="add-roles"
+                                      required
+                                      size="2">
+                                <script type="text/javascript" th:src="@{/js/add-roles.js}"></script>
+                              </select>
+                            </label>
+                          </p>
+                          <button id="new-user-button"
+                                  name="newUserButton"
+                                  class="btn btn-primary"
+                                  onclick="addUser()"
+                          >Add new user</button>
+                        </form>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- закончил форму с новым юзером -->
+          </div>
+          <!-- закончил панель админа -->
+          <!-- Начал панель юзера -->
+        </div>
+        <div class="tab-pane fade" id="userPanel">
+          <h2>User information-page</h2>
+          <div class="card">
+            <h5 class="card-header">About user</h5>
+            <div class="card-body text-center">
+              <table class="table table-striped">
+                <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Username</th>
+                  <th>Password</th>
+                  <th>Roles</th>
+                  <th>User Job</th>
+                </tr>
+                </thead>
+                <tbody id="tbody">
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" th:src="@{/js/add-user.js}"></script>
+<script type="text/javascript" th:src="@{/js/fill-user-page.js}"></script>
+<script type="text/javascript" th:src="@{/js/fill-admin-page.js}"></script>
+<script type="text/javascript" th:src="@{/js/fill-edit-modal.js}"></script>
+<script type="text/javascript" th:src="@{/js/fill-delete-modal.js}"></script>
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+</body>
+</html>
