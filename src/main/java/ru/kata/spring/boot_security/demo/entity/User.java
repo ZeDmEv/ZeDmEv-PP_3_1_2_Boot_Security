@@ -27,9 +27,6 @@ public class User{
     @Column(name = "job")
     private String job;
 
-    @Transient
-    private String passwordConfirm;
-
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
     public User() {

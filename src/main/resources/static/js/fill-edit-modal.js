@@ -24,8 +24,7 @@ async function rolesForEdit() {
                 console.log(editForm.editedUserRoles.options[1].value);
             }
         });
-    }
-    else {
+    } else {
         alert("Ошибка HTTP: " + response.status);
     }
     console.log('Отработал rolesForEdit...');
@@ -59,41 +58,43 @@ async function fillEditModal(userId) {
 }
 
 async function editUser() {
-    let select = editForm.editedUserRoles.getElementsByTagName('option');
-    let thisRoles = [];
-    if (select[0].selected) {
-        thisRoles.push(JSON.parse(select[0].value), JSON.parse(select[1].value));
-    } else {
-        thisRoles.push(JSON.parse(select[1].value));
-    }
+    $("edit-form").validate();
+    if ($("#edit-form").valid()) {
+        let select = editForm.editedUserRoles.getElementsByTagName('option');
+        let thisRoles = [];
+        if (select[0].selected) {
+            thisRoles.push(JSON.parse(select[0].value), JSON.parse(select[1].value));
+        } else {
+            thisRoles.push(JSON.parse(select[1].value));
+        }
 
-    console.log(select[1].value);
-    console.log(JSON.parse(select[1].value));
-    console.log(thisRoles);
+        console.log(select[1].value);
+        console.log(JSON.parse(select[1].value));
+        console.log(thisRoles);
 
-    let userToEdit = {
-        id: editId.value,
-        username: editUsername.value,
-        job: editJob.value,
-        password: editPass.value,
-        roles: thisRoles,
-    };
-    const method = {
-        method: 'PUT',
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(userToEdit)
-    }
-    let response = await fetch(editUserUrl, method);
-    if (response.ok) {
-    } else {
-        alert("Ошибка HTTP: " + response.status);
+        let userToEdit = {
+            id: editId.value,
+            username: editUsername.value,
+            job: editJob.value,
+            password: editPass.value,
+            roles: thisRoles,
+        };
+        const method = {
+            method: 'PUT',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(userToEdit)
+        }
+        let response = await fetch(editUserUrl, method);
+        if (!response.ok){
+            alert("Ошибка HTTP: " + response.status);
+        }
+        editForm.editCloseButton.click();
     }
 }
 
-async function buttonEdit(){
+async function buttonEdit() {
     await editUser();
-    editForm.editCloseButton.click();
 }
 
